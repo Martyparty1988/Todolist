@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Úkoly">
+    <title>Správa úkolů</title>
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiU3ByYXZ1IHVrb2wiLCJzaG9ydF9uYW1lIjoiVWtvbHkiLCJzdGFydF91cmwiOiIvIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzEyMTIxMiIsInRoZW1lX2NvbG9yIjoiIzIxMjEyMSIsImljb25zIjpbeyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSGRwWkhSb1BTSXlORFlpSUdobGFXZG9kRDBpTWpRMklqNGdQSEpsWTNRZ2VEMGlNQ0lnZVQwaU1DSWdkMmxrZEdnOUlqSTBOaUlnYUdWcFoyaDBQU0l5TkRZaUlHWnBiR3c5SWlNeU1USXhNakVpTDQ4TGNHRjBhQ0JrUFNKc01qY3VNVEVnTVRFeExqVXpZeTB4TVM0ME5DQXlMamt6TFMwd09ESXVNemhwTlRJdU1UVWdOREl1TVRRaU1USTJMall6SURFMk5TNDBlRU0yTnk0ME9UVWdOakF1TVRReUlEWTBJRFl5TGPR1TUlJRGZpYkNjelpHYERUVnhjaWxrY21Wa2FXMWxibk1pUGJqeHdhWFJvSUhOMGNMS2xQU0oxSWlCa1BTSjNNVGNnTXpVaGNka3lNUzR5T1M1eE9TNHdOU0F4TlM0eE9UY25aV1poTWk0M015NGlPQ0F4TmlveEsrRWpQVERZYXhvNm9GMWpKbSN0VERweGJoS0NCQ2EzY3hvZmdoKzBjSCtCTnRhZGNEa3hQaURmNmY1b3g5WExCRENyKzQ5NytYZDdWcDVOOTNJVFZuREFORXU4L20vejFGeFVPTFUwL1d6OExVVFVYRlE0dFR6K2VqV1p2LzF0Zm56ZkJkUlBRZGhiaXI1NTUrdysrYlBqeUZHQUdva0xqSSx2SWpnUkZSQ1g3ZEE2bDNGMUJrYThjSVdTaUhHWnNONXl0WGNmbE9yNE1WYmdyNWNZWEJpOUF3N3UzelQ2VitSZzJRb2ErRFMzeEhTRFBFZlBvQ1JyVW9rY3hNWGNRK3Uzb09mST0ifV19">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #f8f9fa;
+            --bg-secondary: rgba(255, 255, 255, 0.25);
+            --bg-card: rgba(255, 255, 255, 0.4);
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border: rgba(255, 255, 255, 0.3);
+            --shadow: rgba(0, 0, 0, 0.1);
+            --accent: #007AFF;
+            --success: #28a745;
+            --danger: #dc3545;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #000;
+            --bg-secondary: rgba(255, 255, 255, 0.1);
+            --bg-card: rgba(255, 255, 255, 0.15);
+            --text-primary: #fff;
+            --text-secondary: #8e8e93;
+            --border: rgba(255, 255, 255, 0.2);
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 414px;
+            margin: 0 auto;
+            padding: 0 16px;
+            padding-bottom: 100px;
+        }
+
+        .header {
+            padding: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(20px);
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            margin: 16px 0;
+            padding: 16px 20px;
+            border: 1px solid var(--border);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-card);
+        }
+
+        .location-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding: 4px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+        }
+
+        .location-tab {
+            flex: 1;
+            min-width: 80px;
+            padding: 12px 8px;
+            background: none;
+            border: none;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .location-tab.active {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+        }
+
+        .add-task-form {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px var(--shadow);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg-secondary);
+            backdrop-filter: blur(20px);
+            color: var(--text-primary);
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .task-item {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 12px var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .task-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px var(--shadow);
+        }
+
+        .task-item.completed {
+            opacity: 0.6;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .task-title {
+            font-weight: 600;
+            font-size: 16px;
+            line-height: 1.3;
+            flex: 1;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 8px;
+            margin-left: 12px;
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-complete {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-delete {
+            background: var(--danger);
+            color: white;
+        }
+
+        .task-description {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .task-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .task-priority {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .priority-high {
+            background: rgba(220, 53, 69, 0.2);
+            color: var(--danger);
+        }
+
+        .priority-medium {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+
+        .priority-low {
+            background: rgba(40, 167, 69, 0.2);
+            color: var(--success);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .offline-indicator {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: var(--danger);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .offline-indicator.show {
+            opacity: 1;
+        }
+
+        .stats {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 12px var(--shadow);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-primary: #000;
+                --bg-secondary: rgba(255, 255, 255, 0.1);
+                --bg-card: rgba(255, 255, 255, 0.15);
+                --text-primary: #fff;
+                --text-secondary: #8e8e93;
+                --border: rgba(255, 255, 255, 0.2);
+                --shadow: rgba(0, 0, 0, 0.3);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-indicator" id="offlineIndicator">Offline</div>
+    
+    <div class="container">
+        <header class="header">
+            <h1>📋 Úkoly</h1>
+            <button class="theme-toggle" id="themeToggle">🌙</button>
+        </header>
+
+        <div class="location-tabs" id="locationTabs">
+            <button class="location-tab active" data-location="Podolí">Podolí</button>
+            <button class="location-tab" data-location="Českomalínská">Českomalínská</button>
+            <button class="location-tab" data-location="Na Marně">Na Marně</button>
+            <button class="location-tab" data-location="Vila Braník">Vila Braník</button>
+        </div>
+
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalTasks">0</div>
+                <div class="stat-label">Celkem</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="completedTasks">0</div>
+                <div class="stat-label">Hotovo</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="pendingTasks">0</div>
+                <div class="stat-label">Zbývá</div>
+            </div>
+        </div>
+
+        <form class="add-task-form" id="addTaskForm">
+            <div class="form-group">
+                <input type="text" class="form-input" id="taskTitle" placeholder="Název úkolu" required>
+            </div>
+            <div class="form-group">
+                <textarea class="form-input" id="taskDescription" placeholder="Popis úkolu" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <select class="form-input" id="taskPriority">
+                    <option value="low">Nízká priorita</option>
+                    <option value="medium" selected>Střední priorita</option>
+                    <option value="high">Vysoká priorita</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">➕ Přidat úkol</button>
+        </form>
+
+        <div class="task-list" id="taskList"></div>
+    </div>
+
+    <script>
+        const DB_NAME = 'TaskManagerDB';
+        const DB_VERSION = 1;
+        const STORE_NAME = 'tasks';
+        
+        let db;
+        let currentLocation = 'Podolí';
+        let tasks = [];
+
+        const locations = ['Podolí', 'Českomalínská', 'Na Marně', 'Vila Braník'];
+
+        async function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    resolve(db);
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    db = event.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                        store.createIndex('location', 'location', { unique: false });
+                        store.createIndex('completed', 'completed', { unique: false });
+                    }
+                };
+            });
+        }
+
+        async function saveTasks() {
+            const transaction = db.transaction([STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(STORE_NAME);
+            
+            await store.clear();
+            for (const task of tasks) {
+                await store.add(task);
+            }
+        }
+
+        async function loadTasks() {
+            const transaction = db.transaction([STORE_NAME], 'readonly');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.getAll();
+            
+            return new Promise((resolve) => {
+                request.onsuccess = () => {
+                    tasks = request.result || [];
+                    resolve(tasks);
+                };
+            });
+        }
+
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        function addTask(title, description, priority, location) {
+            const task = {
+                id: generateId(),
+                title,
+                description,
+                priority,
+                location,
+                completed: false,
+                createdAt: new Date().toISOString()
+            };
+            
+            tasks.push(task);
+            saveTasks();
+            renderTasks();
+            updateStats();
+        }
+
+        function toggleTask(id) {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                saveTasks();
+                renderTasks();
+                updateStats();
+            }
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            saveTasks();
+            renderTasks();
+            updateStats();
+        }
+
+        function getTasksByLocation(location) {
+            return tasks.filter(t => t.location === location);
+        }
+
+        function renderTasks() {
+            const taskList = document.getElementById('taskList');
+            const locationTasks = getTasksByLocation(currentLocation);
+            
+            if (locationTasks.length === 0) {
+                taskList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📝</div>
+                        <p>Žádné úkoly pro ${currentLocation}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            taskList.innerHTML = locationTasks
+                .sort((a, b) => {
+                    if (a.completed !== b.completed) return a.completed - b.completed;
+                    const priorityOrder = { high: 3, medium: 2, low: 1 };
+                    return priorityOrder[b.priority] - priorityOrder[a.priority];
+                })
+                .map(task => `
+                    <div class="task-item ${task.completed ? 'completed' : ''}">
+                        <div class="task-header">
+                            <div class="task-title">${task.title}</div>
+                            <div class="task-actions">
+                                <button class="btn-icon btn-complete" onclick="toggleTask('${task.id}')">
+                                    ${task.completed ? '↩️' : '✅'}
+                                </button>
+                                <button class="btn-icon btn-delete" onclick="deleteTask('${task.id}')">🗑️</button>
+                            </div>
+                        </div>
+                        ${task.description ? `<div class="task-description">${task.description}</div>` : ''}
+                        <div class="task-meta">
+                            <span class="task-priority priority-${task.priority}">${
+                                task.priority === 'high' ? 'Vysoká' : 
+                                task.priority === 'medium' ? 'Střední' : 'Nízká'
+                            }</span>
+                            <span>${new Date(task.createdAt).toLocaleDateString('cs-CZ')}</span>
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        function updateStats() {
+            const locationTasks = getTasksByLocation(currentLocation);
+            const completed = locationTasks.filter(t => t.completed).length;
+            const total = locationTasks.length;
+            const pending = total - completed;
+
+            document.getElementById('totalTasks').textContent = total;
+            document.getElementById('completedTasks').textContent = completed;
+            document.getElementById('pendingTasks').textContent = pending;
+        }
+
+        function switchLocation(location) {
+            currentLocation = location;
+            document.querySelectorAll('.location-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.location === location);
+            });
+            renderTasks();
+            updateStats();
+        }
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            
+            document.body.dataset.theme = theme;
+            document.getElementById('themeToggle').textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.body.dataset.theme;
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.body.dataset.theme = newTheme;
+            document.getElementById('themeToggle').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            localStorage.setItem('theme', newTheme);
+        }
+
+        function updateOnlineStatus() {
+            const indicator = document.getElementById('offlineIndicator');
+            if (navigator.onLine) {
+                indicator.classList.remove('show');
+            } else {
+                indicator.classList.add('show');
+            }
+        }
+
+        document.getElementById('addTaskForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const title = document.getElementById('taskTitle').value.trim();
+            const description = document.getElementById('taskDescription').value.trim();
+            const priority = document.getElementById('taskPriority').value;
+            
+            if (title) {
+                addTask(title, description, priority, currentLocation);
+                e.target.reset();
+            }
+        });
+
+        document.getElementById('locationTabs').addEventListener('click', (e) => {
+            if (e.target.classList.contains('location-tab')) {
+                switchLocation(e.target.dataset.location);
+            }
+        });
+
+        document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                const CACHE_NAME = 'task-manager-v1';
+                
+                self.addEventListener('install', (event) => {
+                    event.waitUntil(
+                        caches.open(CACHE_NAME).then((cache) => {
+                            return cache.addAll(['/']);
+                        })
+                    );
+                });
+                
+                self.addEventListener('fetch', (event) => {
+                    event.respondWith(
+                        caches.match(event.request).then((response) => {
+                            return response || fetch(event.request);
+                        })
+                    );
+                });
+            `;
+            
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            const swUrl = URL.createObjectURL(blob);
+            
+            navigator.serviceWorker.register(swUrl);
+        }
+
+        async function init() {
+            await initDB();
+            await loadTasks();
+            initTheme();
+            renderTasks();
+            updateStats();
+            updateOnlineStatus();
+        }
+
+        init();
+    </script>
+</body>
+</html>
